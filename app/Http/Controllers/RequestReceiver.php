@@ -24,21 +24,23 @@ class RequestReceiver extends Controller
         $messageText = $message["text"];
         $chatID = $message["chat"]["id"];
 
-        if ($messageText == "/all" || $messageText == "/all@cuti_advisor_bot") {
+        // TODO add help message if no command is entered
+
+        if ($messageText == "/all" || $messageText == "/all@kapancuti_bot") {
 
             $holidayList = Holiday::all();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y") ."\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
 
-        } else if ($messageText == "/incoming" || $messageText == "/incoming@cuti_advisor_bot") {
+        } else if ($messageText == "/incoming" || $messageText == "/incoming@kapancuti_bot") {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur mendatang pada tahun ". date("Y") ."\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
 
-        } else if ($messageText == "/recommendation" || $messageText == "/recommendation@cuti_advisor_bot") {
+        } else if ($messageText == "/recommendation" || $messageText == "/recommendation@kapancuti_bot") {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti pada tahun ".
