@@ -26,7 +26,17 @@ class RequestReceiver extends Controller
 
         // TODO add help message if no command is entered
 
-        if ($messageText == "/all" || $messageText == "/all@kapancuti_bot") {
+        if ($messageText == "/start" || $messageText == "/start@kapancuti_bot") {
+
+            $command = new SendMessage();
+            $command->chat_id = $chatID;
+            $command->text = "Untuk menjaga keseimbangan kerja dan liburan, ".
+                "bot ini dibuat sebagai referensi untuk pengambilan cuti anda. ".
+                "Ada 3 command, yaitu /all, /incoming, dan /recommendation. Silakan dicoba.";
+            $command->parse_mode = "html";
+            $this->executeApiRequest([$command]);
+
+        } else if ($messageText == "/all" || $messageText == "/all@kapancuti_bot") {
 
             $holidayList = Holiday::all();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y") ."\n";
@@ -47,7 +57,6 @@ class RequestReceiver extends Controller
                 date("Y") ."\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
             $this->executeApiRequest($requests);
-
         }
 
         return response()->json([]);
