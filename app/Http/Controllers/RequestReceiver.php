@@ -32,7 +32,8 @@ class RequestReceiver extends Controller
             $command->chat_id = $chatID;
             $command->text = "Untuk menjaga keseimbangan kerja dan liburan, ".
                 "bot ini dibuat sebagai referensi untuk pengambilan cuti anda. ".
-                "Ada 3 command, yaitu /all, /incoming, dan /recommendation. Silakan dicoba.";
+                "Ada 3 command, yaitu /all, /incoming, dan /recommendation. Silakan dicoba.\n\n ".
+                "Kritik dan saran silakan hubungi @swallowstalker ya.";
             $command->parse_mode = "html";
             $this->executeApiRequest([$command]);
 
