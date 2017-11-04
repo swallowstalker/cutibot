@@ -26,7 +26,7 @@ class RawHolidayDataImporter
 
     public function parseHolidayData() {
 
-        $holidayRawData = Storage::get("2017.json");
+        $holidayRawData = Storage::get("2018.json");
         $holidayRawList = json_decode($holidayRawData, true);
 
         foreach ($holidayRawList as $holidayRaw) {
