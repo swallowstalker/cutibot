@@ -24,8 +24,6 @@ class RequestReceiver extends Controller
         $messageText = $message["text"];
         $chatID = $message["chat"]["id"];
 
-        // TODO add help message if no command is entered
-
         if ($messageText == "/start" || $messageText == "/start@kapancuti_bot") {
 
             $command = new SendMessage();
