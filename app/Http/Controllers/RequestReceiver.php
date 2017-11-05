@@ -45,15 +45,14 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/incoming" || $messageText == "/incoming@kapancuti_bot") {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur mendatang pada tahun ". date("Y") ."\n";
+            $prefixMessage = "Berikut adalah hari libur untuk 6 bulan mendatang\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
 
         } else if ($messageText == "/recommendation" || $messageText == "/recommendation@kapancuti_bot") {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti pada tahun ".
-                date("Y") ."\n";
+            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 6 bulan mendatang\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
             $this->executeApiRequest($requests);
         }

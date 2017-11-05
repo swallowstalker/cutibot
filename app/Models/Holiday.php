@@ -28,7 +28,8 @@ class Holiday extends Model
     }
 
     public function scopeThisYear($query) {
-        return $query->where(DB::raw("YEAR(start)"), date("Y"));
+        return $query->where(DB::raw("YEAR(start)"), date("Y"))
+            ->where("start", ">=", DB::raw("NOW()"));
     }
 
     public function recommendations() {
