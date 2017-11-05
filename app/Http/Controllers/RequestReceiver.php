@@ -37,7 +37,7 @@ class RequestReceiver extends Controller
 
         } else if ($messageText == "/all" || $messageText == "/all@kapancuti_bot") {
 
-            $holidayList = Holiday::thisYear();
+            $holidayList = Holiday::thisYear()->get();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y") ."\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);

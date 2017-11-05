@@ -36,7 +36,8 @@ class Holiday extends Model
     }
 
     public function scopeIncoming($query) {
-        return $query->where("end", ">", DB::raw("NOW()"));
+        return $query->where("end", ">", DB::raw("NOW()"))
+            ->where("end", "<=", DB::raw("DATE_ADD(NOW(), INTERVAL 6 MONTH)"));
     }
 
     public function scopeGiveEffect($query) {
