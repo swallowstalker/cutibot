@@ -22,9 +22,13 @@ class Holiday extends Model
     {
         parent::boot();
 
-        static::addGlobalScope("year", function (Builder $builder) {
-            $builder->where(DB::raw("YEAR(start)"), date("Y"));
-        });
+//        static::addGlobalScope("year", function (Builder $builder) {
+//            $builder->where(DB::raw("YEAR(start)"), date("Y"));
+//        });
+    }
+
+    public function thisYear($query) {
+        return $query->where(DB::raw("YEAR(start)"), date("Y"));
     }
 
     public function recommendations() {
