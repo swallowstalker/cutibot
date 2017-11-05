@@ -27,7 +27,7 @@ class Holiday extends Model
 //        });
     }
 
-    public function thisYear($query) {
+    public function scopeThisYear($query) {
         return $query->where(DB::raw("YEAR(start)"), date("Y"));
     }
 
