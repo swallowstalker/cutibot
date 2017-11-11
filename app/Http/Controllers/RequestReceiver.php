@@ -171,12 +171,11 @@ class RequestReceiver extends Controller
      */
     private function prepareRangedHolidayText($holiday, $holidayText): string
     {
-        Carbon::setLocale("id");
         if ($holiday->start == $holiday->end) {
-            $holidayText .= $holiday->start->format("l, j");
+            $holidayText .= $holiday->start->formatLocalized("%A, %e");
         } else {
-            $holidayText .= $holiday->start->format("l, j") .
-                " - " . $holiday->end->format("l, j");
+            $holidayText .= $holiday->start->formatLocalized("%A, %e") .
+                " - " . $holiday->end->formatLocalized("%A, %e");
         }
         return $holidayText;
     }
