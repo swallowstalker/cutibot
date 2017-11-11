@@ -171,6 +171,7 @@ class RequestReceiver extends Controller
      */
     private function prepareRangedHolidayText($holiday, $holidayText): string
     {
+        Carbon::setLocale("id");
         if ($holiday->start == $holiday->end) {
             $holidayText .= $holiday->start->format("l, j");
         } else {
@@ -187,6 +188,7 @@ class RequestReceiver extends Controller
      */
     private function prepareMonthText($holiday, $holidayText): array
     {
+        Carbon::setLocale("id");
         $currentMonth = $holiday->start->month;
         $holidayText .= "\n" . $holiday->start->format("F Y") . "\n";
         return array($currentMonth, $holidayText);
@@ -201,6 +203,7 @@ class RequestReceiver extends Controller
      */
     private function prepareLeaveRecommendation($holiday, $holidayText): string
     {
+        Carbon::setLocale("id");
         $differenceDay = $holiday->recommendation_start->diffInDays($holiday->recommendation_end) + 1;
         $leaveDateList = $holiday->recommendations->pluck("leave_date_formatted")->toArray();
 
