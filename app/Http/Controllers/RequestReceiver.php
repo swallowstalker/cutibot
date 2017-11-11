@@ -188,7 +188,6 @@ class RequestReceiver extends Controller
      */
     private function prepareMonthText($holiday, $holidayText): array
     {
-        setlocale(LC_TIME, "id_ID");
         $currentMonth = $holiday->start->month;
 //        $holidayText .= "\n" . $holiday->start->format("F Y") . "\n";
         $holidayText .= "\n" . $holiday->start->formatLocalized("%B %Y") . "\n";

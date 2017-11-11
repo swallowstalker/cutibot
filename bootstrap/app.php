@@ -102,4 +102,6 @@ $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
 
+setlocale(LC_TIME, "id_ID");
+
 return $app;
