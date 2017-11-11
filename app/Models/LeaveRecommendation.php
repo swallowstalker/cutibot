@@ -17,6 +17,6 @@ class LeaveRecommendation extends Model
     ];
 
     public function getLeaveDateFormattedAttribute() {
-        return $this->leave_date->format("l, j");
+        return $this->leave_date->formatLocalized("%A %e %b");
     }
 }

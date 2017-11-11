@@ -212,8 +212,8 @@ class RequestReceiver extends Controller
             $holidayText .= "&gt; " . $leaveDate . "\n";
         }
 
-        $holidayText .= "Liburan dari " . $holiday->recommendation_start->format("l, j") .
-            " - " . $holiday->recommendation_end->format("l, j") . "\n";
+        $holidayText .= "Liburan dari " . $holiday->recommendation_start->formatLocalized("%A %e %b") .
+            " - " . $holiday->recommendation_end->formatLocalized("%A %e %b") . "\n";
         return $holidayText;
     }
 }
