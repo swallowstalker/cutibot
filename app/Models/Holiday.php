@@ -22,10 +22,6 @@ class Holiday extends Model
     protected static function boot()
     {
         parent::boot();
-
-//        static::addGlobalScope("year", function (Builder $builder) {
-//            $builder->where(DB::raw("YEAR(start)"), date("Y"));
-//        });
     }
 
     public function scopeThisYear($query) {

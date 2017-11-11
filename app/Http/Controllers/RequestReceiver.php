@@ -153,7 +153,7 @@ class RequestReceiver extends Controller
     {
         Carbon::setLocale("id");
         $currentDate = Carbon::now();
-        $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start);
+        $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start, true);
 
         $daysToHoliday = $currentDate->diffInDays($holiday->start, false) + 1;
         if ($daysToHoliday > 0) {
