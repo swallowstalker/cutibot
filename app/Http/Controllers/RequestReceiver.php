@@ -157,7 +157,7 @@ class RequestReceiver extends Controller
 
         $daysToHoliday = $currentDate->diffInDays($holiday->start, false) + 1;
         if ($daysToHoliday > 0) {
-            $holidayText .= "(". $daysToHolidayInHuman . ")\n";
+            $holidayText .= "(". $daysToHolidayInHuman . " lagi)\n";
         } else {
             $holidayText .= "(Liburan sudah lewat)\n";
         }
