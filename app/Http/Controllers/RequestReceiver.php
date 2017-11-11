@@ -152,9 +152,11 @@ class RequestReceiver extends Controller
     private function prepareRemainingDaysTextToHoliday($holiday, $holidayText): string
     {
         $currentDate = Carbon::now();
+        $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start);
+
         $daysToHoliday = $currentDate->diffInDays($holiday->start, false) + 1;
         if ($daysToHoliday > 0) {
-            $holidayText .= "(". $daysToHoliday . " hari lagi)\n";
+            $holidayText .= "(". $daysToHolidayInHuman . ")\n";
         } else {
             $holidayText .= "(Liburan sudah lewat)\n";
         }
