@@ -151,6 +151,7 @@ class RequestReceiver extends Controller
      */
     private function prepareRemainingDaysTextToHoliday($holiday, $holidayText): string
     {
+        Carbon::setLocale("fr");
         $currentDate = Carbon::now();
         $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start);
 
