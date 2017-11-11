@@ -22,7 +22,6 @@ class Holiday extends Model
     protected static function boot()
     {
         parent::boot();
-        Carbon::setLocale("id");
 
 //        static::addGlobalScope("year", function (Builder $builder) {
 //            $builder->where(DB::raw("YEAR(start)"), date("Y"));
