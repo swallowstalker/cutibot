@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class Holiday extends Model
     protected static function boot()
     {
         parent::boot();
+        Carbon::setLocale("id");
 
 //        static::addGlobalScope("year", function (Builder $builder) {
 //            $builder->where(DB::raw("YEAR(start)"), date("Y"));
