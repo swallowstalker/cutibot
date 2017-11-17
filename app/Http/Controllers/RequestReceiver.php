@@ -7,6 +7,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 use unreal4u\TelegramAPI\Telegram\Methods\SendSticker;
+use unreal4u\TelegramAPI\Telegram\Types\Chat;
+use unreal4u\TelegramAPI\Telegram\Types\Message;
+use unreal4u\TelegramAPI\Telegram\Types\Update;
 use unreal4u\TelegramAPI\TgLog;
 use Log;
 
@@ -19,18 +22,23 @@ class RequestReceiver extends Controller
      */
     public function update(Request $request) {
 
-        $response = $request->input();
+        $updates = new Update($request->input());
+//        Log::debug(json_encode($updates));
+//        Log::debug($updates->message->text);
 
-        $message = $response["message"];
-        if (! array_key_exists("text", $message)) {
+        if (empty($updates->message->text) || $updates->message->from->is_bot) {
             return response()->json([]);
         }
-        Log::debug($message["text"]);
 
-        $messageText = $message["text"];
-        $chatID = $message["chat"]["id"];
+        $messageText = $updates->message->text;
+        $chatID = $updates->message->chat->id;
 
-        if ($messageText == "/start" || $messageText == "/start@kapancuti_bot") {
+        $individualUserChat = false;
+        if ($chatID >= 0) { // if update origin is from group, add bot name prefix requirement
+            $individualUserChat = true;
+        }
+
+        if ($messageText == "/start@kapancuti_bot" || ($messageText == "/start" && $individualUserChat)) {
 
             $command = new SendMessage();
             $command->chat_id = $chatID;
@@ -40,30 +48,55 @@ class RequestReceiver extends Controller
                 "Kritik dan saran silakan hubungi @swallowstalker ya.";
             $command->parse_mode = "html";
             $this->executeApiRequest([$command]);
+            $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/all" || $messageText == "/all@kapancuti_bot") {
+        } else if ($messageText == "/all@kapancuti_bot" || ($messageText == "/all" && $individualUserChat)) {
 
             $holidayList = Holiday::thisYear()->get();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y") ."\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
+            $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/incoming" || $messageText == "/incoming@kapancuti_bot") {
+        } else if ($messageText == "/incoming@kapancuti_bot" || ($messageText == "/incoming" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur untuk 6 bulan mendatang\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
+            $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/recommendation" || $messageText == "/recommendation@kapancuti_bot") {
+        } else if ($messageText == "/recommendation@kapancuti_bot" || ($messageText == "/recommendation" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 6 bulan mendatang\n";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
             $this->executeApiRequest($requests);
+            $this->reportToAdmin($updates->message);
         }
 
         return response()->json([]);
+    }
+
+    /**
+     * For debugging purpose, to reproduce bug with untriggered request.
+     */
+    private function reportToAdmin(Message $message) {
+
+        $adminChatID = env("MAINTAINER_CHAT_ID");
+        $command = new SendMessage();
+        $command->chat_id = $adminChatID;
+
+        if ($message->chat->id < 0) {
+            $command->text = "Report call group: ". $message->chat->title .", from: ". $message->from->first_name . " " .
+                $message->from->last_name . "(". $message->from->username .")";
+        } else {
+            $command->text = "Report call private: ". $message->from->first_name . " " .
+                $message->from->last_name . "(". $message->from->username .")";
+        }
+
+        $command->parse_mode = "html";
+        $this->executeApiRequest([$command]);
     }
 
     /**
