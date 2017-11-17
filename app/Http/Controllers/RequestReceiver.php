@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 use unreal4u\TelegramAPI\Telegram\Methods\SendSticker;
 use unreal4u\TelegramAPI\TgLog;
+use Log;
 
 class RequestReceiver extends Controller
 {
@@ -21,6 +22,8 @@ class RequestReceiver extends Controller
         $response = $request->input();
 
         $message = $response["message"];
+        Log::debug($message);
+
         $messageText = $message["text"];
         $chatID = $message["chat"]["id"];
 
