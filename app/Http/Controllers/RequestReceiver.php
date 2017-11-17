@@ -22,7 +22,7 @@ class RequestReceiver extends Controller
         $response = $request->input();
 
         $message = $response["message"];
-        if (array_key_exists("text", $message)) {
+        if (! array_key_exists("text", $message)) {
             return response()->json([]);
         }
         Log::debug($message["text"]);
