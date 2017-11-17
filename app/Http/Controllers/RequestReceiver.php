@@ -22,7 +22,10 @@ class RequestReceiver extends Controller
         $response = $request->input();
 
         $message = $response["message"];
-        Log::debug($message);
+        if (array_key_exists("text", $message)) {
+            return response()->json([]);
+        }
+        Log::debug($message["text"]);
 
         $messageText = $message["text"];
         $chatID = $message["chat"]["id"];
