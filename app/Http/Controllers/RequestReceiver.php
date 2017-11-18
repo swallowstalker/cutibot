@@ -53,7 +53,7 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/all@kapancuti_bot" || ($messageText == "/all" && $individualUserChat)) {
 
             $holidayList = Holiday::thisYear()->get();
-            $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y") ."\n";
+            $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y");
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
@@ -61,7 +61,7 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/incoming@kapancuti_bot" || ($messageText == "/incoming" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur untuk 6 bulan mendatang\n";
+            $prefixMessage = "Berikut adalah hari libur untuk 6 bulan mendatang";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
@@ -69,7 +69,7 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/recommendation@kapancuti_bot" || ($messageText == "/recommendation" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 6 bulan mendatang\n";
+            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 6 bulan mendatang";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
@@ -122,17 +122,21 @@ class RequestReceiver extends Controller
 
             $holidayText = "\n";
             if ($currentMonth != $holiday->start->month) {
+                $holidayText .= "-------------------\n";
                 list($currentMonth, $holidayText) = $this->prepareMonthText($holiday, $holidayText);
             }
 
-            $holidayText .= "-------------------\n";
+            if ($withRecommendation) {
+                $holidayText .= "-------------------\n";
+            }
 
             $holidayText = $this->prepareRemainingDaysTextToHoliday($holiday, $holidayText);
             $holidayText = $this->prepareRangedHolidayText($holiday, $holidayText);
 
-            $holidayText .= " (<b>". $holiday->description ."</b>)\n";
+            $holidayText .= " (<b>". $holiday->description ."</b>)";
 
             if (! $holiday->ignored and $withRecommendation) {
+                $holidayText .= "\n";
                 $holidayText = $this->prepareLeaveRecommendation($holiday, $holidayText);
             }
 
@@ -143,7 +147,7 @@ class RequestReceiver extends Controller
             $responseText .= $holidayText;
         }
 
-        $responseText .= "\nSelamat liburan!\n\n";
+        $responseText .= "\nSelamat liburan!";
         $sendMessage->text = $responseText;
         $sendMessage->parse_mode = "html";
 
@@ -211,9 +215,9 @@ class RequestReceiver extends Controller
     private function prepareRangedHolidayText($holiday, $holidayText): string
     {
         if ($holiday->start == $holiday->end) {
-            $holidayText .= $holiday->start->formatLocalized("%A %e %b");
+            $holidayText .= "&#9899; ". $holiday->start->formatLocalized("%A %e %b");
         } else {
-            $holidayText .= $holiday->start->formatLocalized("%A %e %b") .
+            $holidayText .= "&#9899; ". $holiday->start->formatLocalized("%A %e %b") .
                 " - " . $holiday->end->formatLocalized("%A %e %b");
         }
         return $holidayText;
@@ -227,7 +231,7 @@ class RequestReceiver extends Controller
     private function prepareMonthText($holiday, $holidayText): array
     {
         $currentMonth = $holiday->start->month;
-        $holidayText .= "\n" . $holiday->start->formatLocalized("%B %Y") . "\n";
+        $holidayText .= "<b>". $holiday->start->formatLocalized("%B %Y") . "</b>\n";
         return array($currentMonth, $holidayText);
     }
 
@@ -252,7 +256,7 @@ class RequestReceiver extends Controller
         }
 
         $holidayText .= "Liburan dari " . $holiday->recommendation_start->formatLocalized("%A %e %b") .
-            " - " . $holiday->recommendation_end->formatLocalized("%A %e %b") . "\n";
+            " - " . $holiday->recommendation_end->formatLocalized("%A %e %b");
         return $holidayText;
     }
 }
