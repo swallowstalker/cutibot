@@ -15,10 +15,18 @@ use unreal4u\TelegramAPI\Telegram\Types\Message;
 use unreal4u\TelegramAPI\Telegram\Types\Sticker;
 use unreal4u\TelegramAPI\Telegram\Types\Update;
 use unreal4u\TelegramAPI\TgLog;
+use App\Helpers\CutiMessageFormatter;
 use Log;
 
 class RequestReceiver extends Controller
 {
+    private $formatter;
+
+    public function __construct(CutiMessageFormatter $formatter)
+    {
+        $this->formatter = $formatter;
+    }
+
     /**
      * Main function which receives brunt of all requests
      * @param Request $request
@@ -158,7 +166,7 @@ class RequestReceiver extends Controller
                 $holidayText .= "-------------------\n";
             }
 
-            $holidayText = $this->prepareRemainingDaysTextToHoliday($holiday, $holidayText);
+            $holidayText .= $this->formatter->prepareRemainingDaysTextToHoliday($holiday);
             $holidayText = $this->prepareRangedHolidayText($holiday, $holidayText);
 
             $holidayText .= " (<b>". $holiday->description ."</b>)";

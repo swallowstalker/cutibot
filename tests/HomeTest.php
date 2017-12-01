@@ -2,7 +2,7 @@
 
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class ExampleTest extends TestCase
+class HomeTest extends TestCase
 {
     /**
      * A basic test example.
@@ -14,7 +14,7 @@ class ExampleTest extends TestCase
         $this->get('/');
 
         $this->assertEquals(
-            $this->app->version(), $this->response->getContent()
+            "\"Hello world\"", $this->response->getContent()
         );
     }
 }

@@ -11,7 +11,7 @@ namespace App\Helpers;
 use App\Models\Holiday;
 use App\Models\LeaveRecommendation;
 use Carbon\Carbon;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 
 /**
