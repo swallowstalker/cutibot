@@ -222,28 +222,6 @@ class RequestReceiver extends Controller
     }
 
     /**
-     * Get remaining days left to holiday
-     *
-     * @param $holiday
-     * @param $holidayText
-     * @return string
-     */
-    private function prepareRemainingDaysTextToHoliday($holiday, $holidayText): string
-    {
-        Carbon::setLocale("id");
-        $currentDate = Carbon::now();
-        $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start, true);
-
-        $daysToHoliday = $currentDate->diffInDays($holiday->start, false) + 1;
-        if ($daysToHoliday > 0) {
-            $holidayText .= "(". $daysToHolidayInHuman . " lagi)\n";
-        } else {
-            $holidayText .= "(Liburan sudah lewat)\n";
-        }
-        return $holidayText;
-    }
-
-    /**
      * @param $holiday
      * @param $holidayText
      * @return string
