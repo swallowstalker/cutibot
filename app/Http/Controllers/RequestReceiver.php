@@ -166,7 +166,7 @@ class RequestReceiver extends Controller
                 $holidayText .= "-------------------\n";
             }
 
-            $holidayText .= $this->formatter->prepareRemainingDaysTextToHoliday($holiday);
+            $holidayText .= $this->formatter->prepareRemainingDaysTextToHoliday($holiday) ."\n";
             $holidayText = $this->prepareRangedHolidayText($holiday, $holidayText);
 
             $holidayText .= " (<b>". $holiday->description ."</b>)";
