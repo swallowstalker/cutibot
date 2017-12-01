@@ -71,7 +71,7 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/incoming@kapancuti_bot" || ($messageText == "/incoming" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur untuk 6 bulan mendatang";
+            $prefixMessage = "Berikut adalah hari libur untuk 3 bulan mendatang";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
@@ -79,7 +79,7 @@ class RequestReceiver extends Controller
         } else if ($messageText == "/recommendation@kapancuti_bot" || ($messageText == "/recommendation" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
-            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 6 bulan mendatang";
+            $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 3 bulan mendatang";
             $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
