@@ -47,8 +47,4 @@ class ConfigController extends Controller
 
         return response()->json([]);
     }
-
-    public function test() {
-
-    }
 }

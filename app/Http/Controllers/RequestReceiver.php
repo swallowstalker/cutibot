@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use unreal4u\TelegramAPI\Telegram\Methods\AnswerInlineQuery;
 use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 use unreal4u\TelegramAPI\Telegram\Methods\SendSticker;
 use unreal4u\TelegramAPI\Telegram\Types\Chat;
+use unreal4u\TelegramAPI\Telegram\Types\Inline\Query\Result\Article;
+use unreal4u\TelegramAPI\Telegram\Types\InputMessageContent\Text;
 use unreal4u\TelegramAPI\Telegram\Types\Message;
+use unreal4u\TelegramAPI\Telegram\Types\Sticker;
 use unreal4u\TelegramAPI\Telegram\Types\Update;
 use unreal4u\TelegramAPI\TgLog;
 use Log;
@@ -23,6 +27,12 @@ class RequestReceiver extends Controller
     public function update(Request $request) {
 
         $updates = new Update($request->input());
+
+        if (! empty($updates->inline_query)) {
+            $this->testInline($updates);
+            return response()->json([]);
+        }
+
 //        Log::debug(json_encode($updates));
 //        Log::debug($updates->message->text);
 
@@ -76,6 +86,24 @@ class RequestReceiver extends Controller
         }
 
         return response()->json([]);
+    }
+
+    private function testInline(Update $update) {
+
+        $inlineQueryResultArticle = new Article();
+        $inlineQueryResultArticle->title = 'Incoming holidays';
+
+        $inputMessageContentText = new Sticker();
+        $inputMessageContentText->message_text = '/incoming@kapancuti_bot';
+
+        $inlineQueryResultArticle->input_message_content = $inputMessageContentText;
+        $inlineQueryResultArticle->id = md5('something unique that you can query on later');
+
+        $answerInlineQuery = new AnswerInlineQuery();
+        $answerInlineQuery->inline_query_id = $update->inline_query->id;
+        $answerInlineQuery->addResult($inlineQueryResultArticle);
+
+        $this->executeApiRequest([$answerInlineQuery]);
     }
 
     /**
@@ -252,7 +280,7 @@ class RequestReceiver extends Controller
             $differenceDay . " hari libur) \n";
 
         foreach ($leaveDateList as $leaveDate) {
-            $holidayText .= "&gt; " . $leaveDate . "\n";
+            $holidayText .= "&#9737; " . $leaveDate . "\n";
         }
 
         $holidayText .= "Liburan dari " . $holiday->recommendation_start->formatLocalized("%A %e %b") .
