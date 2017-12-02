@@ -4,7 +4,7 @@ use Laravel\Lumen\Testing\DatabaseTransactions;
 use App\Helpers\CutiMessageFormatter;
 use Carbon\Carbon;
 
-class MessageFormatTest extends TestCase
+class RemainingDaysTest extends TestCase
 {
     private $formatter;
 

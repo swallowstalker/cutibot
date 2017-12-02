@@ -167,7 +167,7 @@ class RequestReceiver extends Controller
             }
 
             $holidayText .= $this->formatter->prepareRemainingDaysTextToHoliday($holiday) ."\n";
-            $holidayText = $this->prepareRangedHolidayText($holiday, $holidayText);
+            $holidayText .= $this->formatter->prepareRangedHolidayText($holiday);
 
             $holidayText .= " (<b>". $holiday->description ."</b>)";
 
@@ -219,22 +219,6 @@ class RequestReceiver extends Controller
         foreach ($requests as $request) {
             $tgLog->performApiRequest($request);
         }
-    }
-
-    /**
-     * @param $holiday
-     * @param $holidayText
-     * @return string
-     */
-    private function prepareRangedHolidayText($holiday, $holidayText): string
-    {
-        if ($holiday->start == $holiday->end) {
-            $holidayText .= "&#9899; ". $holiday->start->formatLocalized("%A %e %b");
-        } else {
-            $holidayText .= "&#9899; ". $holiday->start->formatLocalized("%A %e %b") .
-                " - " . $holiday->end->formatLocalized("%A %e %b");
-        }
-        return $holidayText;
     }
 
     /**

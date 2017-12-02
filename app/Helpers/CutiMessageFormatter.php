@@ -13,6 +13,11 @@ use Carbon\Carbon;
 
 class CutiMessageFormatter {
 
+    public function __construct()
+    {
+        Carbon::setLocale("id");
+    }
+
     /**
      * Get remaining days left to holiday
      *
@@ -35,4 +40,23 @@ class CutiMessageFormatter {
 
         return $holidayText;
     }
+
+    /**
+     * @param $holiday
+     * @return string
+     */
+    public function prepareRangedHolidayText($holiday): string
+    {
+        Carbon::setLocale("id");
+
+        $holidayText = "";
+        if ($holiday->start == $holiday->end) {
+            $holidayText = "&#9899; ". $holiday->start->formatLocalized("%A %e %b");
+        } else {
+            $holidayText = "&#9899; ". $holiday->start->formatLocalized("%A %e %b") .
+                " - " . $holiday->end->formatLocalized("%A %e %b");
+        }
+        return $holidayText;
+    }
 }
+
