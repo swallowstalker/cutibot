@@ -11,6 +11,13 @@ namespace App\Helpers;
 use Carbon\Carbon;
 
 
+/**
+ * Class CutiMessageFormatter
+ * @package App\Helpers
+ *
+ * Format given holiday into respective message text
+ * to send to users.
+ */
 class CutiMessageFormatter {
 
     public function __construct()
@@ -26,8 +33,6 @@ class CutiMessageFormatter {
      */
     public function prepareRemainingDaysTextToHoliday($holiday): string
     {
-        Carbon::setLocale("id");
-
         $currentDate = Carbon::now();
         $daysToHolidayInHuman = $currentDate->diffForHumans($holiday->start, true);
 
@@ -47,8 +52,6 @@ class CutiMessageFormatter {
      */
     public function prepareRangedHolidayText($holiday): string
     {
-        Carbon::setLocale("id");
-
         $holidayText = "";
         if ($holiday->start == $holiday->end) {
             $holidayText = "&#9899; ". $holiday->start->formatLocalized("%A %e %b");
@@ -56,6 +59,16 @@ class CutiMessageFormatter {
             $holidayText = "&#9899; ". $holiday->start->formatLocalized("%A %e %b") .
                 " - " . $holiday->end->formatLocalized("%A %e %b");
         }
+        return $holidayText;
+    }
+
+    /**
+     * @param $holiday
+     * @return string
+     */
+    public function prepareMonthText($holiday): string
+    {
+        $holidayText = "<b>". $holiday->start->formatLocalized("%B %Y") . "</b>";
         return $holidayText;
     }
 }

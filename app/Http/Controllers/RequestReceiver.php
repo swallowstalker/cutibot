@@ -159,7 +159,7 @@ class RequestReceiver extends Controller
             $holidayText = "\n";
             if ($currentMonth != $holiday->start->month) {
                 $holidayText .= "-------------------\n";
-                list($currentMonth, $holidayText) = $this->prepareMonthText($holiday, $holidayText);
+                $holidayText .= $this->formatter->prepareMonthText($holiday) . "\n";
             }
 
             if ($withRecommendation) {
