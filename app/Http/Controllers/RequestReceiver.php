@@ -171,9 +171,9 @@ class RequestReceiver extends Controller
 
             $holidayText .= " (<b>". $holiday->description ."</b>)";
 
-            if (! $holiday->ignored and $withRecommendation) {
+            if ($withRecommendation) {
                 $holidayText .= "\n";
-                $holidayText = $this->prepareLeaveRecommendation($holiday, $holidayText);
+                $holidayText .= $this->formatter->prepareLeaveRecommendation($holiday);
             }
 
             if ($holiday->start->day === 0 || $holiday->end->day === 6) {
@@ -219,18 +219,6 @@ class RequestReceiver extends Controller
         foreach ($requests as $request) {
             $tgLog->performApiRequest($request);
         }
-    }
-
-    /**
-     * @param $holiday
-     * @param $holidayText
-     * @return array
-     */
-    private function prepareMonthText($holiday, $holidayText): array
-    {
-        $currentMonth = $holiday->start->month;
-        $holidayText .= "<b>". $holiday->start->formatLocalized("%B %Y") . "</b>\n";
-        return array($currentMonth, $holidayText);
     }
 
     /**

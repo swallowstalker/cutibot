@@ -71,5 +71,35 @@ class CutiMessageFormatter {
         $holidayText = "<b>". $holiday->start->formatLocalized("%B %Y") . "</b>";
         return $holidayText;
     }
+
+    /**
+     * Get list of leave that employee should take in recommendations
+     *
+     * @param $holiday
+     * @return string
+     */
+    public function prepareLeaveRecommendation($holiday): string
+    {
+        $holidayText = "";
+
+        if (! $holiday->ignored) {
+
+            $differenceDay = $holiday->recommendation_start->diffInDays($holiday->recommendation_end) + 1;
+            $leaveDateList = $holiday->recommendations->pluck("leave_date_formatted")->toArray();
+
+            $holidayText = "<b>Rekomendasi cuti </b>".
+                "(". count($leaveDateList) . " hari cuti, ".
+                $differenceDay . " hari libur)\n";
+
+            foreach ($leaveDateList as $leaveDate) {
+                $holidayText .= "&#9737; " . $leaveDate . "\n";
+            }
+
+            $holidayText .= "Liburan dari " . $holiday->recommendation_start->formatLocalized("%A %e %b") .
+                " - " . $holiday->recommendation_end->formatLocalized("%A %e %b");
+        }
+
+        return $holidayText;
+    }
 }
 
