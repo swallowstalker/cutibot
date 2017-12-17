@@ -78,16 +78,28 @@ class RequestReceiver extends Controller
 
             $holidayList = Holiday::thisYear()->get();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y");
-            $requests = $this->prepareHolidayListMessage($chatID, $holidayList, $prefixMessage);
-            $this->executeApiRequest($requests);
+            $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
+
+            $command = new SendMessage();
+            $command->chat_id = $chatID;
+            $command->text = $holidayText;
+            $command->parse_mode = "html";
+            $this->executeApiRequest([$command]);
+
             $this->reportToAdmin($updates->message);
 
         } else if ($messageText == "/incoming@kapancuti_bot" || ($messageText == "/incoming" && $individualUserChat)) {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur untuk 3 bulan mendatang";
-            $requests = $this->prepareHolidayListMessage($chatID, $holidayList, $prefixMessage);
-            $this->executeApiRequest($requests);
+            $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
+
+            $command = new SendMessage();
+            $command->chat_id = $chatID;
+            $command->text = $holidayText;
+            $command->parse_mode = "html";
+            $this->executeApiRequest([$command]);
+
             $this->reportToAdmin($updates->message);
 
         } else if ($messageText == "/recommendation@kapancuti_bot" || ($messageText == "/recommendation" && $individualUserChat)) {
@@ -100,8 +112,8 @@ class RequestReceiver extends Controller
             $command->chat_id = $chatID;
             $command->text = $holidayText;
             $command->parse_mode = "html";
-
             $this->executeApiRequest([$command]);
+
             $this->reportToAdmin($updates->message);
         }
 
