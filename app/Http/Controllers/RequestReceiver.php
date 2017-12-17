@@ -18,6 +18,12 @@ use unreal4u\TelegramAPI\TgLog;
 use App\Helpers\CutiMessageFormatter;
 use Log;
 
+/**
+ * Class RequestReceiver
+ * @package App\Http\Controllers
+ *
+ * Main receiver for telegram request
+ */
 class RequestReceiver extends Controller
 {
     private $formatter;
@@ -72,7 +78,7 @@ class RequestReceiver extends Controller
 
             $holidayList = Holiday::thisYear()->get();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y");
-            $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
+            $requests = $this->prepareHolidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
 
@@ -80,7 +86,7 @@ class RequestReceiver extends Controller
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur untuk 3 bulan mendatang";
-            $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage);
+            $requests = $this->prepareHolidayListMessage($chatID, $holidayList, $prefixMessage);
             $this->executeApiRequest($requests);
             $this->reportToAdmin($updates->message);
 
@@ -88,8 +94,14 @@ class RequestReceiver extends Controller
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 3 bulan mendatang";
-            $requests = $this->prepareholidayListMessage($chatID, $holidayList, $prefixMessage, true);
-            $this->executeApiRequest($requests);
+            $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage, true);
+
+            $command = new SendMessage();
+            $command->chat_id = $chatID;
+            $command->text = $holidayText;
+            $command->parse_mode = "html";
+
+            $this->executeApiRequest([$command]);
             $this->reportToAdmin($updates->message);
         }
 
@@ -144,10 +156,10 @@ class RequestReceiver extends Controller
      * @param bool $withRecommendation
      * @return array
      */
-    private function prepareholidayListMessage($chatID,
-                                              $holidayList,
-                                              string $prefixMessage = "",
-                                              bool $withRecommendation = false) : array {
+    private function prepareHolidayListMessage($chatID,
+                                               $holidayList,
+                                               string $prefixMessage = "",
+                                               bool $withRecommendation = false) : array {
 
         $sendMessage = new SendMessage();
         $sendMessage->chat_id = $chatID;
@@ -219,30 +231,5 @@ class RequestReceiver extends Controller
         foreach ($requests as $request) {
             $tgLog->performApiRequest($request);
         }
-    }
-
-    /**
-     * Get list of leave that employee should take in recommendations
-     *
-     * @param $holiday
-     * @param $holidayText
-     * @return string
-     */
-    private function prepareLeaveRecommendation($holiday, $holidayText): string
-    {
-        $differenceDay = $holiday->recommendation_start->diffInDays($holiday->recommendation_end) + 1;
-        $leaveDateList = $holiday->recommendations->pluck("leave_date_formatted")->toArray();
-
-        $holidayText .= "<b>Rekomendasi cuti </b>".
-            "(". count($leaveDateList) . " hari cuti, ".
-            $differenceDay . " hari libur) \n";
-
-        foreach ($leaveDateList as $leaveDate) {
-            $holidayText .= "&#9737; " . $leaveDate . "\n";
-        }
-
-        $holidayText .= "Liburan dari " . $holiday->recommendation_start->formatLocalized("%A %e %b") .
-            " - " . $holiday->recommendation_end->formatLocalized("%A %e %b");
-        return $holidayText;
     }
 }

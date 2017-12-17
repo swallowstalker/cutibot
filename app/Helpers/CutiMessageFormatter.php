@@ -26,6 +26,54 @@ class CutiMessageFormatter {
     }
 
     /**
+     * Prepare list of holiday messages
+     *
+     * @param $holidayList
+     * @param string $prefixMessage
+     * @param bool $withRecommendation
+     * @return string
+     */
+    public function prepareHolidayListMessage($holidayList,
+                                              string $prefixMessage = "",
+                                              bool $withRecommendation = false) : string {
+
+        $responseText = $prefixMessage;
+        $currentMonth = null;
+        foreach ($holidayList as $holiday) {
+
+            $holidayText = "\n";
+            if ($currentMonth != $holiday->start->month) {
+                $holidayText .= "-------------------\n";
+                $holidayText .= $this->prepareMonthText($holiday) . "\n";
+                $currentMonth = $holiday->start->month;
+            }
+
+            if ($withRecommendation) {
+                $holidayText .= "-------------------\n";
+            }
+
+            $holidayText .= $this->prepareRemainingDaysTextToHoliday($holiday) ."\n";
+            $holidayText .= $this->prepareRangedHolidayText($holiday);
+
+            $holidayText .= " (<b>". $holiday->description ."</b>)";
+
+            if ($withRecommendation) {
+                $holidayText .= "\n";
+                $holidayText .= $this->prepareLeaveRecommendation($holiday);
+            }
+
+            if ($holiday->start->day === 0 || $holiday->end->day === 6) {
+                $holidayText = "<i>". $holidayText ."</i>";
+            }
+
+            $responseText .= $holidayText;
+        }
+
+        $responseText .= "\nSelamat liburan!";
+        return $responseText;
+    }
+
+    /**
      * Get remaining days left to holiday
      *
      * @param $holiday
