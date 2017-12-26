@@ -72,7 +72,8 @@ class RequestReceiver extends Controller
             $command->chat_id = $chatID;
             $command->text = "Untuk menjaga keseimbangan kerja dan liburan, ".
                 "bot ini dibuat sebagai referensi untuk pengambilan cuti anda. ".
-                "Ada 3 command, yaitu /all, /incoming, dan /recommendation. Silakan dicoba.\n\n ".
+                "Ada 3 command, yaitu: \n\n/year [tahun] \n/incoming \n/recommendation\n\n".
+                "Silakan dicoba.\n".
                 "Kritik dan saran silakan hubungi @swallowstalker ya.";
             $command->parse_mode = "html";
             $this->executeApiRequest([$command]);
@@ -82,23 +83,26 @@ class RequestReceiver extends Controller
 
             $year = $this->finder->findYearParams($messageText);
             if ($year == "") {
-                return response()->json([]);
-            }
-
-            $holidayList = Holiday::isYear($year)->get();
-            if (count($holidayList) == 0) {
                 $command = new SendMessage();
                 $command->chat_id = $chatID;
-                $command->text = "Permintaan anda untuk daftar hari libur pada tahun tersebut tidak tersedia.";
+                $command->text = "Silakan panggil command ini dengan cara /year [tahun]";
                 $command->parse_mode = "html";
             } else {
-                $prefixMessage = "Berikut adalah semua hari libur pada tahun ". $year;
-                $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
+                $holidayList = Holiday::isYear($year)->get();
+                if (count($holidayList) == 0) {
+                    $command = new SendMessage();
+                    $command->chat_id = $chatID;
+                    $command->text = "Permintaan anda untuk daftar hari libur pada tahun tersebut tidak tersedia.";
+                    $command->parse_mode = "html";
+                } else {
+                    $prefixMessage = "Berikut adalah semua hari libur pada tahun ". $year;
+                    $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
 
-                $command = new SendMessage();
-                $command->chat_id = $chatID;
-                $command->text = $holidayText;
-                $command->parse_mode = "html";
+                    $command = new SendMessage();
+                    $command->chat_id = $chatID;
+                    $command->text = $holidayText;
+                    $command->parse_mode = "html";
+                }
             }
 
             $this->executeApiRequest([$command]);
