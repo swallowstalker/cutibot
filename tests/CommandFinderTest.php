@@ -5,7 +5,6 @@
  * Date: 26/12/17
  * Time: 19.31
  */
-
 use App\Helpers\CommandFinder;
 
 class CommandFinderTest extends TestCase
@@ -25,10 +24,8 @@ class CommandFinderTest extends TestCase
     public function testFindingCommand() {
         $result = $this->finder->findCommand("/start", true);
         $this->assertEquals("start", $result);
-
         $result = $this->finder->findCommand("/start@". env("BOT_USERNAME"), false);
         $this->assertEquals("start", $result);
-
         $result = $this->finder->findCommand("/start", false);
         $this->assertEquals("", $result);
     }
@@ -36,7 +33,6 @@ class CommandFinderTest extends TestCase
     public function testFindingYearParams() {
         $result = $this->finder->findYearParams("/start 2099");
         $this->assertEquals("2099", $result);
-
         $result = $this->finder->findYearParams("/start@". env("BOT_USERNAME") ." 2099");
         $this->assertEquals("2099", $result);
     }
