@@ -109,20 +109,6 @@ class RequestReceiver extends Controller
 
             $this->reportToAdmin($updates->message);
 
-        } else if ($command == "all") {
-
-            $holidayList = Holiday::thisYear()->get();
-            $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y");
-            $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
-
-            $command = new SendMessage();
-            $command->chat_id = $chatID;
-            $command->text = $holidayText;
-            $command->parse_mode = "html";
-            $this->executeApiRequest([$command]);
-
-            $this->reportToAdmin($updates->message);
-
         } else if ($command == "incoming") {
 
             $holidayList = Holiday::incoming()->get();
@@ -192,61 +178,6 @@ class RequestReceiver extends Controller
 
         $command->parse_mode = "html";
         $this->executeApiRequest([$command]);
-    }
-
-    /**
-     * Prepare list of holiday messages
-     *
-     * @param $chatID
-     * @param $holidayList
-     * @param string $prefixMessage
-     * @param bool $withRecommendation
-     * @return array
-     */
-    private function prepareHolidayListMessage($chatID,
-                                               $holidayList,
-                                               string $prefixMessage = "",
-                                               bool $withRecommendation = false) : array {
-
-        $sendMessage = new SendMessage();
-        $sendMessage->chat_id = $chatID;
-
-        $responseText = $prefixMessage;
-        $currentMonth = null;
-        foreach ($holidayList as $holiday) {
-
-            $holidayText = "\n";
-            if ($currentMonth != $holiday->start->month) {
-                $holidayText .= "-------------------\n";
-                $holidayText .= $this->formatter->prepareMonthText($holiday) . "\n";
-            }
-
-            if ($withRecommendation) {
-                $holidayText .= "-------------------\n";
-            }
-
-            $holidayText .= $this->formatter->prepareRemainingDaysTextToHoliday($holiday) ."\n";
-            $holidayText .= $this->formatter->prepareRangedHolidayText($holiday);
-
-            $holidayText .= " (<b>". $holiday->description ."</b>)";
-
-            if ($withRecommendation) {
-                $holidayText .= "\n";
-                $holidayText .= $this->formatter->prepareLeaveRecommendation($holiday);
-            }
-
-            if ($holiday->start->day === 0 || $holiday->end->day === 6) {
-                $holidayText = "<i>". $holidayText ."</i>";
-            }
-
-            $responseText .= $holidayText;
-        }
-
-        $responseText .= "\nSelamat liburan!";
-        $sendMessage->text = $responseText;
-        $sendMessage->parse_mode = "html";
-
-        return [$sendMessage];
     }
 
     /**

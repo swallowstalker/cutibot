@@ -24,10 +24,6 @@ class Holiday extends Model
         parent::boot();
     }
 
-    public function scopeThisYear($query) {
-        return $query->where(DB::raw("YEAR(start)"), date("Y"));
-    }
-
     public function scopeIsYear($query, $year) {
         return $query->where(DB::raw("YEAR(start)"), $year);
     }
