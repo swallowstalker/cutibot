@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CommandFinder;
 use App\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use unreal4u\TelegramAPI\Telegram\Methods\AnswerInlineQuery;
 use unreal4u\TelegramAPI\Telegram\Methods\SendMessage;
 use unreal4u\TelegramAPI\Telegram\Methods\SendSticker;
-use unreal4u\TelegramAPI\Telegram\Types\Chat;
 use unreal4u\TelegramAPI\Telegram\Types\Inline\Query\Result\Article;
-use unreal4u\TelegramAPI\Telegram\Types\InputMessageContent\Text;
 use unreal4u\TelegramAPI\Telegram\Types\Message;
 use unreal4u\TelegramAPI\Telegram\Types\Sticker;
 use unreal4u\TelegramAPI\Telegram\Types\Update;
@@ -27,10 +26,12 @@ use Log;
 class RequestReceiver extends Controller
 {
     private $formatter;
+    private $finder;
 
-    public function __construct(CutiMessageFormatter $formatter)
+    public function __construct(CutiMessageFormatter $formatter, CommandFinder $finder)
     {
         $this->formatter = $formatter;
+        $this->finder = $finder;
     }
 
     /**
@@ -55,6 +56,7 @@ class RequestReceiver extends Controller
         }
 
         $messageText = $updates->message->text;
+
         $chatID = $updates->message->chat->id;
 
         $individualUserChat = false;
@@ -62,7 +64,9 @@ class RequestReceiver extends Controller
             $individualUserChat = true;
         }
 
-        if ($messageText == "/start@kapancuti_bot" || ($messageText == "/start" && $individualUserChat)) {
+        $command = $this->finder->findCommand($messageText, $individualUserChat);
+
+        if ($command == "start") {
 
             $command = new SendMessage();
             $command->chat_id = $chatID;
@@ -74,7 +78,34 @@ class RequestReceiver extends Controller
             $this->executeApiRequest([$command]);
             $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/all@kapancuti_bot" || ($messageText == "/all" && $individualUserChat)) {
+        } else if ($command == "year") {
+
+            $year = $this->finder->findYearParams($messageText);
+            if ($year == "") {
+                return response()->json([]);
+            }
+
+            $holidayList = Holiday::isYear($year)->get();
+            if (count($holidayList) == 0) {
+                $command = new SendMessage();
+                $command->chat_id = $chatID;
+                $command->text = "Permintaan anda untuk daftar hari libur pada tahun tersebut tidak tersedia.";
+                $command->parse_mode = "html";
+            } else {
+                $prefixMessage = "Berikut adalah semua hari libur pada tahun ". $year;
+                $holidayText = $this->formatter->prepareHolidayListMessage($holidayList, $prefixMessage);
+
+                $command = new SendMessage();
+                $command->chat_id = $chatID;
+                $command->text = $holidayText;
+                $command->parse_mode = "html";
+            }
+
+            $this->executeApiRequest([$command]);
+
+            $this->reportToAdmin($updates->message);
+
+        } else if ($command == "all") {
 
             $holidayList = Holiday::thisYear()->get();
             $prefixMessage = "Berikut adalah semua hari libur pada tahun ". date("Y");
@@ -88,7 +119,7 @@ class RequestReceiver extends Controller
 
             $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/incoming@kapancuti_bot" || ($messageText == "/incoming" && $individualUserChat)) {
+        } else if ($command == "incoming") {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur untuk 3 bulan mendatang";
@@ -102,7 +133,7 @@ class RequestReceiver extends Controller
 
             $this->reportToAdmin($updates->message);
 
-        } else if ($messageText == "/recommendation@kapancuti_bot" || ($messageText == "/recommendation" && $individualUserChat)) {
+        } else if ($command == "recommendation") {
 
             $holidayList = Holiday::incoming()->get();
             $prefixMessage = "Berikut adalah hari libur mendatang dan rekomendasi cuti untuk 3 bulan mendatang";

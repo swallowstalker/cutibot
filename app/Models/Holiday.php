@@ -28,6 +28,10 @@ class Holiday extends Model
         return $query->where(DB::raw("YEAR(start)"), date("Y"));
     }
 
+    public function scopeIsYear($query, $year) {
+        return $query->where(DB::raw("YEAR(start)"), $year);
+    }
+
     public function recommendations() {
         return $this->hasMany(LeaveRecommendation::class, "holiday_id");
     }
